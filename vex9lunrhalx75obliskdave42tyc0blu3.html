@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .player-container {
+            background: #050505;
+            border-radius: 16px;
+            box-shadow: 0 0 50px rgba(255,241,106,0.09);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+
+        .album-art {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #262626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .player-controls {
+            padding: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            
+            .player-container {
+                border-radius: 0;
+                max-width: 100%;
+                min-height: 100vh;
+            }
+
+            .album-art {
+                aspect-ratio: 16/9;
+            }
+        }
+
+        .song-info {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .song-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .artist {
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+        }
+        
+        .album {
+            color: #FFF16A;
+            font-size: 0.875rem;
+        }
+
+        .progress-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: #e5e7eb;
+            border-radius: 2.5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 2.5px;
+            transition: width 0.1s linear;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .control-button:hover {
+            background: #1a1a1a;
+        }
+
+        .play-button {
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            color: white;
+        }
+
+        .play-button:hover {
+            background: #2563eb;
+        }
+
+        .playlist {
+            border-top: 1px solid #262626;
+        }
+
+        .playlist-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .playlist-item:hover {
+            background: #1a1a1a;
+        }
+
+        .playlist-item.active {
+            background: #1f1f1f;
+        }
+
+        .song-number {
+            color: #6b7280;
+            font-size: 0.875rem;
+            min-width: 1.5rem;
+        }
+
+        .playlist-song-info h3 {
+            font-size: 0.875rem;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .playlist-song-info p {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0 1rem 0.75rem;
+        }
+
+        .volume-slider {
+            flex-grow: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <div class="album-art">
+            <img src="https://wimhouben.com/pub/albumcover.png" alt="Album Art">
+        </div>
+        
+        <div class="player-controls">
+            <div class="song-info">
+                <div class="song-title">Intro</div>
+                <div class="artist">Radiocosmo</div>
+                <div class="album">Journey Beyond The Stars</div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" onclick="seek(event)">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+                <div class="time-info">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="control-button" onclick="previousSong()">
+                    ⏮
+                </button>
+                <button class="control-button play-button" onclick="togglePlay()" id="playButton">
+                    ▶
+                </button>
+                <button class="control-button" onclick="nextSong()">
+                    ⏭
+                </button>
+            </div>
+
+            <div class="volume-control">
+                <span>🔊</span>
+                <input type="range" class="volume-slider" min="0" max="100" value="100" onchange="setVolume(this.value)">
+            </div>
+        </div>
+
+        <div class="playlist">
+            <div class="playlist-item active" onclick="changeSong(0)">
+                <span class="song-number">1</span>
+                <div class="playlist-song-info">
+                    <h3>Intro</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+            <div class="playlist-item" onclick="changeSong(1)">
+                <span class="song-number">2</span>
+                <div class="playlist-song-info">
+                    <h3>Meditation</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+            <div class="playlist-item" onclick="changeSong(2)">
+                <span class="song-number">3</span>
+                <div class="playlist-song-info">
+                    <h3>Two Feet High</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+            <div class="playlist-item" onclick="changeSong(3)">
+                <span class="song-number">4</span>
+                <div class="playlist-song-info">
+                    <h3>Love is a Lonely Song</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+            <div class="playlist-item" onclick="changeSong(4)">
+                <span class="song-number">5</span>
+                <div class="playlist-song-info">
+                    <h3>Doin It</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+            <div class="playlist-item" onclick="changeSong(5)">
+                <span class="song-number">6</span>
+                <div class="playlist-song-info">
+                    <h3>Outro</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+            <div class="playlist-item" onclick="changeSong(6)">
+                <span class="song-number">7</span>
+                <div class="playlist-song-info">
+                    <h3>Full Tape</h3>
+                    <p>Radiocosmo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio">
+        <source src="/api/placeholder/audio" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const playButton = document.getElementById('playButton');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const durationSpan = document.getElementById('duration');
+        
+        const playlist = [
+            { title: 'Intro', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: '/api/placeholder/audio' },
+            { title: 'Meditation', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: '/api/placeholder/audio' },
+            { title: 'Two Feet High', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: '/api/placeholder/audio' },
+            { title: 'Love is a Lonely Song', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: '/api/placeholder/audio' },
+            { title: 'Doin it', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: '/api/placeholder/audio' },
+            { title: 'Outro', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: '/api/placeholder/audio' },
+            { title: 'Full Tape', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'https://wimhouben.com/pub/finalmix.mp3' },
+        ];
+
+        let currentSongIndex = 0;
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playButton.textContent = '⏸';
+            } else {
+                audio.pause();
+                playButton.textContent = '▶';
+            }
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = `${progress}%`;
+            currentTimeSpan.textContent = formatTime(audio.currentTime);
+            durationSpan.textContent = formatTime(audio.duration);
+        }
+
+        function seek(event) {
+            const progressBar = event.currentTarget;
+            const clickPosition = event.offsetX;
+            const progressWidth = progressBar.offsetWidth;
+            const percentageClicked = (clickPosition / progressWidth);
+            audio.currentTime = percentageClicked * audio.duration;
+        }
+
+        function setVolume(value) {
+            audio.volume = value / 100;
+        }
+
+        function changeSong(index) {
+            currentSongIndex = index;
+            audio.src = playlist[index].src;
+            document.querySelector('.song-title').textContent = playlist[index].title;
+            document.querySelector('.artist').textContent = playlist[index].artist;
+            document.querySelector('.album').textContent = playlist[index].album;
+            
+            document.querySelectorAll('.playlist-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            audio.play();
+            playButton.textContent = '⏸';
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            changeSong(currentSongIndex);
+        }
+
+        function previousSong() {
+            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+            changeSong(currentSongIndex);
+        }
+
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', () => {
+            durationSpan.textContent = formatTime(audio.duration);
+        });
+        audio.addEventListener('ended', nextSong);
+    </script>
+</body>
+</html>
