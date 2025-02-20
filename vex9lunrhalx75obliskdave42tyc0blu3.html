@@ -317,89 +317,93 @@
     </audio>
 
     <script>
-        const audio = document.getElementById('audio');
-        const playButton = document.getElementById('playButton');
-        const progressBar = document.getElementById('progressBar');
-        const currentTimeSpan = document.getElementById('currentTime');
-        const durationSpan = document.getElementById('duration');
-        
-        const playlist = [
-            { title: 'Launch', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/launch.mp3' },
-            { title: 'Russian Moon', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/russianmoon.mp3' },
-            { title: 'Tycho-2', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/tycho-2.mp3' },
-            { title: 'Clavius', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/clavius.mp3' },
-            { title: 'Station V', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/station-v.mp3' },
-            { title: 'Monitor-77', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/monitor-77.mp3' },
-            { title: 'Full Tape', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/full-tape.mp3' },
-        ];
+    const audio = document.getElementById('audio');
+    const playButton = document.getElementById('playButton');
+    const progressBar = document.getElementById('progressBar');
+    const currentTimeSpan = document.getElementById('currentTime');
+    const durationSpan = document.getElementById('duration');
 
-        let currentSongIndex = 0;
+    const playlist = [
+        { title: 'Launch', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/launch.mp3' },
+        { title: 'Russian Moon', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/russianmoon.mp3' },
+        { title: 'Tycho-2', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/tycho-2.mp3' },
+        { title: 'Clavius', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/clavius.mp3' },
+        { title: 'Station V', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/station-v.mp3' },
+        { title: 'Monitor-77', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/monitor-77.mp3' },
+        { title: 'Full Tape', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/full-tape.mp3' },
+    ];
 
-        function togglePlay() {
-            if (audio.paused) {
-                audio.play();
-                playButton.textContent = '⏸';
-            } else {
-                audio.pause();
-                playButton.textContent = '▶';
-            }
-        }
+    let currentSongIndex = 0;
 
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            seconds = Math.floor(seconds % 60);
-            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function updateProgress() {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = `${progress}%`;
-            currentTimeSpan.textContent = formatTime(audio.currentTime);
-            durationSpan.textContent = formatTime(audio.duration);
-        }
-
-        function seek(event) {
-            const progressBar = event.currentTarget;
-            const clickPosition = event.offsetX;
-            const progressWidth = progressBar.offsetWidth;
-            const percentageClicked = (clickPosition / progressWidth);
-            audio.currentTime = percentageClicked * audio.duration;
-        }
-
-        function setVolume(value) {
-            audio.volume = value / 100;
-        }
-
-        function changeSong(index) {
-            currentSongIndex = index;
-            audio.src = playlist[index].src;
-            document.querySelector('.song-title').textContent = playlist[index].title;
-            document.querySelector('.artist').textContent = playlist[index].artist;
-            document.querySelector('.album').textContent = playlist[index].album;
-            
-            document.querySelectorAll('.playlist-item').forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-            });
-
+    function togglePlay() {
+        if (audio.paused) {
             audio.play();
             playButton.textContent = '⏸';
+        } else {
+            audio.pause();
+            playButton.textContent = '▶';
         }
+    }
 
-        function nextSong() {
-            currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            changeSong(currentSongIndex);
-        }
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        seconds = Math.floor(seconds % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
 
-        function previousSong() {
-            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-            changeSong(currentSongIndex);
-        }
+    function updateProgress() {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        progressBar.style.width = `${progress}%`;
+        currentTimeSpan.textContent = formatTime(audio.currentTime);
+        durationSpan.textContent = formatTime(audio.duration);
+    }
 
-        audio.addEventListener('timeupdate', updateProgress);
-        audio.addEventListener('loadedmetadata', () => {
-            durationSpan.textContent = formatTime(audio.duration);
+    function seek(event) {
+        const progressBar = event.currentTarget;
+        const clickPosition = event.offsetX;
+        const progressWidth = progressBar.offsetWidth;
+        const percentageClicked = (clickPosition / progressWidth);
+        audio.currentTime = percentageClicked * audio.duration;
+    }
+
+    function setVolume(value) {
+        audio.volume = value / 100;
+    }
+
+    function changeSong(index) {
+        currentSongIndex = index;
+        audio.src = playlist[index].src;
+        console.log('Playing:', audio.src); // Add this line
+        document.querySelector('.song-title').textContent = playlist[index].title;
+        document.querySelector('.artist').textContent = playlist[index].artist;
+        document.querySelector('.album').textContent = playlist[index].album;
+        
+        document.querySelectorAll('.playlist-item').forEach((item, i) => {
+            item.classList.toggle('active', i === index);
         });
-        audio.addEventListener('ended', nextSong);
+
+        audio.play();
+        playButton.textContent = '⏸';
+    }
+
+    function nextSong() {
+        currentSongIndex = (currentSongIndex + 1) % playlist.length;
+        changeSong(currentSongIndex);
+    }
+
+    function previousSong() {
+        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+        changeSong(currentSongIndex);
+    }
+
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('loadedmetadata', () => {
+        durationSpan.textContent = formatTime(audio.duration);
+    });
+    audio.addEventListener('ended', nextSong);
+
+    changeSong(0); // Add this line at the end of your script
     </script>
+    
 </body>
 </html>
