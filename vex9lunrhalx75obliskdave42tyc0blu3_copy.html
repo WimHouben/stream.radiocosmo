@@ -4,198 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Journey Beyond the Stars</title>
-    <link rel="stylesheet" href="https://raw.githubusercontent.com/thisisradiocosmo/radiocosmo/refs/heads/main/style.css">
+    <link rel="stylesheet" href="https://www.radiocosmo.net/style.css">
 
 
 </head>
 <body>
-<h1>Radiocosmo</h1>
-<button>yes</button>
-    <div class="player-container">
-        <div class="album-art">
-            <img src="https://wimhouben.com/pub/albumcover.png" alt="Album Art">
-        </div>
+
+<img src="https://wimhouben.com/pub/albumcover.png" alt="Album Art">
+<h2>
+Journey Beyond the Stars
+</h2>
+
+<button class="player-button" id="play-pause"><div class="indicator" id="indicator"></div>Play
+</button>
+
+<audio id="player" style="display: none;"></audio>
+
+<script>
+        // Your song playlist - add your MP3 files here
+        const songs = [
+            "https://www.wimhouben.com/pub/radiocosmo/journeybeyondthestars/full-tape.mp3"
+        ];
         
-        <div class="player-controls">
-            <div class="song-info">
-                <div class="song-title">Launch</div>
-                <div class="artist">Radiocosmo</div>
-                <div class="album">Journey Beyond The Stars</div>
-            </div>
-
-            <div class="progress-container">
-                <div class="progress-bar" onclick="seek(event)">
-                    <div class="progress" id="progressBar"></div>
-                </div>
-                <div class="time-info">
-                    <span id="currentTime">0:00</span>
-                    <span id="duration">0:00</span>
-                </div>
-            </div>
-
-            <div class="controls">
-                <button class="control-button" onclick="previousSong()">
-                    ⏮
-                </button>
-                <button class="control-button play-button" onclick="togglePlay()" id="playButton">
-                    ▶
-                </button>
-                <button class="control-button" onclick="nextSong()">
-                    ⏭
-                </button>
-            </div>
-
-            <div class="volume-control">
-                <span>🔊</span>
-                <input type="range" class="volume-slider" min="0" max="100" value="100" onchange="setVolume(this.value)">
-            </div>
-        </div>
-
-        <div class="playlist">
-            <div class="playlist-item active" onclick="changeSong(0)">
-                <span class="song-number">1</span>
-                <div class="playlist-song-info">
-                    <h3>Launch</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-            <div class="playlist-item" onclick="changeSong(1)">
-                <span class="song-number">2</span>
-                <div class="playlist-song-info">
-                    <h3>Russian Moon</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-            <div class="playlist-item" onclick="changeSong(2)">
-                <span class="song-number">3</span>
-                <div class="playlist-song-info">
-                    <h3>Tchyo-2</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-            <div class="playlist-item" onclick="changeSong(3)">
-                <span class="song-number">4</span>
-                <div class="playlist-song-info">
-                    <h3>Clavius</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-            <div class="playlist-item" onclick="changeSong(4)">
-                <span class="song-number">5</span>
-                <div class="playlist-song-info">
-                    <h3>Station V</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-            <div class="playlist-item" onclick="changeSong(5)">
-                <span class="song-number">6</span>
-                <div class="playlist-song-info">
-                    <h3>Monitor-77</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-            <div class="playlist-item" onclick="changeSong(6)">
-                <span class="song-number">7</span>
-                <div class="playlist-song-info">
-                    <h3>Full Tape</h3>
-                    <p>Radiocosmo</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <audio id="audio">
-        <source src="" type="audio/mp3">
-    </audio>
-
-    <script>
-    const audio = document.getElementById('audio');
-    const playButton = document.getElementById('playButton');
-    const progressBar = document.getElementById('progressBar');
-    const currentTimeSpan = document.getElementById('currentTime');
-    const durationSpan = document.getElementById('duration');
-
-    const playlist = [
-        { title: 'Launch', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/launch.mp3' },
-        { title: 'Russian Moon', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/russianmoon.mp3' },
-        { title: 'Tycho-2', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/tycho-2.mp3' },
-        { title: 'Clavius', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/clavius.mp3' },
-        { title: 'Station V', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/station-v.mp3' },
-        { title: 'Monitor-77', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/monitor-77.mp3' },
-        { title: 'Full Tape', artist: 'Radiocosmo', album: 'Journey Beyond The Stars', src: 'media/journeybeyondthestars/full-tape.mp3' },
-    ];
-
-    let currentSongIndex = 0;
-
-    function togglePlay() {
-        if (audio.paused) {
-            audio.play();
-            playButton.textContent = '⏸';
-        } else {
-            audio.pause();
-            playButton.textContent = '▶';
+        const player = document.getElementById('player');
+        const playPauseButton = document.getElementById('play-pause');
+        const indicator = document.getElementById('indicator');
+        let currentSong = 0;
+        let isPlaying = false;
+        
+        // Toggle play/pause
+        playPauseButton.onclick = function() {
+            if (isPlaying) {
+                player.pause();
+                playPauseButton.childNodes[1].nodeValue = "Play";
+                isPlaying = false;
+            } else {
+                if (player.src) {
+                    player.play();
+                } else {
+                    playSong();
+                }
+                playPauseButton.childNodes[1].nodeValue = "Pause";
+                indicator.style.animationPlayState = "running";
+                isPlaying = true;
+            }
+        };
+        
+        // Play the current song
+        function playSong() {
+            player.src = songs[currentSong];
+            player.play();
         }
-    }
-
-    function formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        seconds = Math.floor(seconds % 60);
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    function updateProgress() {
-        const progress = (audio.currentTime / audio.duration) * 100;
-        progressBar.style.width = `${progress}%`;
-        currentTimeSpan.textContent = formatTime(audio.currentTime);
-        durationSpan.textContent = formatTime(audio.duration);
-    }
-
-    function seek(event) {
-        const progressBar = event.currentTarget;
-        const clickPosition = event.offsetX;
-        const progressWidth = progressBar.offsetWidth;
-        const percentageClicked = (clickPosition / progressWidth);
-        audio.currentTime = percentageClicked * audio.duration;
-    }
-
-    function setVolume(value) {
-        audio.volume = value / 100;
-    }
-
-    function changeSong(index) {
-        currentSongIndex = index;
-        audio.src = playlist[index].src;
-        console.log('Playing:', audio.src); // Add this line
-        document.querySelector('.song-title').textContent = playlist[index].title;
-        document.querySelector('.artist').textContent = playlist[index].artist;
-        document.querySelector('.album').textContent = playlist[index].album;
         
-        document.querySelectorAll('.playlist-item').forEach((item, i) => {
-            item.classList.toggle('active', i === index);
-        });
-
-        audio.play();
-        playButton.textContent = '⏸';
-    }
-
-    function nextSong() {
-        currentSongIndex = (currentSongIndex + 1) % playlist.length;
-        changeSong(currentSongIndex);
-    }
-
-    function previousSong() {
-        currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-        changeSong(currentSongIndex);
-    }
-
-    audio.addEventListener('timeupdate', updateProgress);
-    audio.addEventListener('loadedmetadata', () => {
-        durationSpan.textContent = formatTime(audio.duration);
-    });
-    audio.addEventListener('ended', nextSong);
-
-    changeSong(0); // Add this line at the end of your script
+        // When a song ends, play the next one
+        player.onended = function() {
+            currentSong = (currentSong + 1) % songs.length;
+            playSong();
+        };
     </script>
-    
+<br>
+<p>
+Thank you for your support. More on <a href="https://www.radiocosmo.net">www.radiocosmo.net</a>
+</p>
+
 </body>
 </html>
